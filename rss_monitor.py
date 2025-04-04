@@ -108,10 +108,10 @@ class RSSMonitor:
         with self.db_lock:
             cursor = self.conn.cursor()
             # Get keyword matches
-            cursor.execute('SELECT * FROM articles WHERE keywords_matched != "" ORDER BY processed_date DESC LIMIT 50')
+            cursor.execute('SELECT * FROM articles WHERE keywords_matched != "" ORDER BY published DESC LIMIT 50')
             keyword_articles = cursor.fetchall()
             # Get all recent articles
-            cursor.execute('SELECT * FROM articles ORDER BY processed_date DESC LIMIT 50')
+            cursor.execute('SELECT * FROM articles ORDER BY published DESC LIMIT 50')
             all_articles = cursor.fetchall()
         
         html = f"""
