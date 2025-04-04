@@ -73,7 +73,9 @@ class RSSMonitor:
                     
                     if matched_keywords:
                         matched_articles += 1
-                        print(f"Found matching article: {entry.title}")
+                        print(f"Found matching article: {entry.title}, Keywords: {matched_keywords}")
+                    else:
+                        print(f"No match for article: {entry.title}")
                     
                     cursor.execute('''
                         INSERT OR IGNORE INTO articles 
