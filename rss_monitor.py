@@ -48,8 +48,9 @@ class RSSMonitor:
 
     def check_feed(self, feed_url, feed_name):
         try:
-            print(f"Checking feed: {feed_name}")
+            print(f"Checkecking feed: {feed_name}")
             feed = feedparser.parse(feed_url)
+            print(f"Number of entries in feed: {len(feed.entries)}")
             new_articles = 0
             matched_articles = 0
             
@@ -58,18 +59,22 @@ class RSSMonitor:
                 
                 for entry in feed.entries:
                     try:
-                        pub_date = datetime.fromtimestamp(time.mktime(entry.published_parsed))
+                           pub_date = datetime.fromtimestamp(time.mktime(entry.published_parsed))
                     except:
                         pub_date = datetime.now()
                     
                     cursor.execute('SELECT id FROM articles WHERE link = ?', (entry.link,))
                     if cursor.fetchone():
+                        print(f"Article already exists: {entry.title}")
                         continue
                     
                     new_articles += 1
                     
                     content = f"{entry.title} {getattr(entry, 'description', '')}".lower()
                     matched_keywords = [kw for kw in KEYWORDS if kw.lower() in content]
+                    
+                    print(f"Checking article: {entry.title}")
+                    print(f"Content: {content[:100]}...")  # Print first 100 characters of content
                     
                     if matched_keywords:
                         matched_articles += 1
@@ -99,89 +104,89 @@ class RSSMonitor:
             print(f"Error processing feed {feed_name}: {str(e)}")
             logging.error(f"Error processing feed {feed_name}: {str(e)}")
 
-def generate_html(self):
-    with self.db_lock:
-        cursor = self.conn.cursor()
-        # Get keyword matches
-        cursor.execute('SELECT * FROM articles WHERE keywords_matched != "" ORDER BY processed_date DESC LIMIT 50')
-        keyword_articles = cursor.fetchall()
-        # Get all recent articles
-        cursor.execute('SELECT * FROM articles ORDER BY processed_date DESC LIMIT 50')
-        all_articles = cursor.fetchall()
-    
-    html = f"""
-    <html>
-    <head>
-        <title>RSS Monitor</title>
-        <style>
-            body {{ font-family: Arial, sans-serif; margin: 20px; }}
-            table {{ border-collapse: collapse; width: 100%; margin-bottom: 30px; }}
-            th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
-            th {{ background-color: #f2f2f2; }}
-            tr:nth-child(even) {{ background-color: #f9f9f9; }}
-            h2 {{ color: #333; margin-top: 30px; }}
-        </style>
-    </head>
-    <body>
-        <h1>RSS Feed Monitor</h1>
-        <p>Monitoring feeds: {', '.join(FEEDS.values())}</p>
-        <p>Keywords: {', '.join(KEYWORDS)}</p>
+    def generate_html(self):
+        with self.db_lock:
+            cursor = self.conn.cursor()
+            # Get keyword matches
+            cursor.execute('SELECT * FROM articles WHERE keywords_matched != "" ORDER BY processed_date DESC LIMIT 50')
+            keyword_articles = cursor.fetchall()
+            # Get all recent articles
+            cursor.execute('SELECT * FROM articles ORDER BY processed_date DESC LIMIT 50')
+            all_articles = cursor.fetchall()
         
-        <h2>Keyword Matches</h2>
-        <table>
-            <tr>
-                <th>Title</th>
-                <th>Feed</th>
-                <th>Published</th>
-                <th>Keywords Matched</th>
-                <th>Processed</th>
-            </tr>
-    """
-
-    # Add keyword matches
-    for article in keyword_articles:
-        html += f"""
-            <tr>
-                <td>{article[1]}</td>
-                <td>{article[5]}</td>
-                <td>{article[4]}</td>
-                <td>{article[6]}</td>
-                <td>{article[7]}</td>
-            </tr>
+        html = f"""
+        <html>
+        <head>
+            <title>RSS Monitor</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 20px; }}
+                table {{ border-collapse: collapse; width: 100%; margin-bottom: 30px; }}
+                th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
+                th {{ background-color: #f2f2f2; }}
+                tr:nth-child(even) {{ background-color: #f9f9f9; }}
+                h2 {{ color: #333; margin-top: 30px; }}
+            </style>
+        </head>
+        <body>
+            <h1>RSS Feed Monitor</h1>
+            <p>Monitoring feeds: {', '.join(FEEDS.values())}</p>
+            <p>Keywords: {', '.join(KEYWORDS)}</p>
+            
+            <h2>Keyword Matches</h2>
+            <table>
+                <tr>
+                    <th>Title</th>
+                    <th>Feed</th>
+                    <th>Published</th>
+                    <th>Keywords Matched</th>
+                    <th>Processed</th>
+                </tr>
         """
 
-    html += """
-        </table>
-        
-        <h2>All Recent Articles</h2>
-        <table>
-            <tr>
-                <th>Title</th>
-                <th>Feed</th>
-                <th>Published</th>
-                <th>Processed</th>
-            </tr>
-    """
+        # Add keyword matches
+        for article in keyword_articles:
+            html += f"""
+                <tr>
+                    <td>{article[1]}</td>
+                    <td>{article[5]}</td>
+                    <td>{article[4]}</td>
+                    <td>{article[6]}</td>
+                    <td>{article[7]}</td>
+                </tr>
+            """
 
-    # Add all articles
-    for article in all_articles:
-        html += f"""
-            <tr>
-                <td>{article[1]}</td>
-                <td>{article[5]}</td>
-                <td>{article[4]}</td>
-                <td>{article[7]}</td>
-            </tr>
+        html += """
+            </table>
+            
+            <h2>All Recent Articles</h2>
+            <table>
+                <tr>
+                    <th>Title</th>
+                    <th>Feed</th>
+                    <th>Published</th>
+                    <th>Processed</th>
+                </tr>
         """
 
-    html += """
-        </table>
-    </body>
-    </html>
-    """
-    
-    with open('index.html', 'w', encoding='utf-8') as f:
-        f.write(html)
+        # Add all articles
+        for article in all_articles:
+            html += f"""
+                <tr>
+                    <td>{article[1]}</td>
+                    <td>{article[5]}</td>
+                    <td>{article[4]}</td>
+                    <td>{article[7]}</td>
+                </tr>
+            """
+
+        html += """
+            </table>
+        </body>
+        </html>
+        """
+        
+        with open('index.html', 'w', encoding='utf-8') as f:
+            f.write(html)
 
 if __name__ == "__main__":
     monitor = RSSMonitor()
