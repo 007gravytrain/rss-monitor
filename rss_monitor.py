@@ -6,7 +6,7 @@ import threading
 import logging
 import os
 from datetime import datetime
-from config import FEEDS, KEYWORDS  # Import only what’s needed
+from config import FEEDS, KEYWORDS  # Import only what's needed
 
 class RSSMonitor:
     def __init__(self):
@@ -62,7 +62,7 @@ class RSSMonitor:
                     except:
                         pub_date = datetime.now()
                     
-                    cursor.execute('SELECT id FROM articles WHERE link = ?', (entry.link,))
+                    cursor.executcute('SELECT id FROM articles WHERE link = ?', (entry.link,))
                     if cursor.fetchone():
                         continue
                     
@@ -127,4 +127,31 @@ class RSSMonitor:
                     <th>Keywords Matched</th>
                     <th>Processed</th>
                 </tr>
-        """.format(',
+        """.format(', '.join(FEEDS.values()), ', '.join(KEYWORDS))
+
+        for article in articles:
+            html += """
+                <tr>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                </tr>
+            """.format(article[1], article[5], article[4], article[6], article[7])
+
+        html += """
+            </table>
+        </body>
+        </html>
+        """
+        
+        with open('index.html', 'w', encoding='utf-8') as f:
+            f.write(html)
+
+if __name__ == "__main__":
+    monitor = RSSMonitor()
+    for feed_url, feed_name in FEEDS.items():
+        monitor.check_feed(feed_url, feed_name)
+    monitor.generate_html()
+    monitor.conn.close()
