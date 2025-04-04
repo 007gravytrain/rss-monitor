@@ -48,10 +48,10 @@ class RSSMonitor:
 
     def check_feed(self, feed_url, feed_name):
         try:
-            print(f"Checkecking feed: {feed_name}")
+            print(f"Checking feed: {feed_name}")
             feed = feedparser.parse(feed_url)
             print(f"Number of entries in feed: {len(feed.entries)}")
-            new_articles = 0
+            new_articticles = 0
             matched_articles = 0
             
             with self.db_lock:
@@ -59,7 +59,7 @@ class RSSMonitor:
                 
                 for entry in feed.entries:
                     try:
-                           pub_date = datetime.fromtimestamp(time.mktime(entry.published_parsed))
+                        pub_date = datetime.fromtimestamp(time.mktime(entry.published_parsed))
                     except:
                         pub_date = datetime.now()
                     
@@ -83,7 +83,7 @@ class RSSMonitor:
                         print(f"No match for article: {entry.title}")
                     
                     cursor.execute('''
-                        INSERT OR IGNORE INTO articles 
+                        INSERT OR IGNORE IN INTO articles 
                         (title, link, description, published, feed_name, keywords_matched, processed_date)
                         VALUES (?, ?, ?, ?, ?, ?, ?)
                     ''', (
@@ -147,7 +147,7 @@ class RSSMonitor:
         for article in keyword_articles:
             html += f"""
                 <tr>
-                    <td>{article[1]}</td>
+                    <td><a href="{article[2]}" target="_blank">{article[1]}</a></td>
                     <td>{article[5]}</td>
                     <td>{article[4]}</td>
                     <td>{article[6]}</td>
@@ -172,7 +172,7 @@ class RSSMonitor:
         for article in all_articles:
             html += f"""
                 <tr>
-                    <td>{article[1]}</td>
+                    <td><a href="{article[2]}" target="_blank">{article[1]}</a></td>
                     <td>{article[5]}</td>
                     <td>{article[4]}</td>
                     <td>{article[7]}</td>
