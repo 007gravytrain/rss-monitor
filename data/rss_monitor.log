@@ -6,3 +6,11 @@
 2025-04-04 20:49:00,267 - ERROR - Error processing feed Socialist Alternative: local variable 'new_articles' referenced before assignment
 2025-04-04 20:49:01,369 - ERROR - Error processing feed Left Voice: local variable 'new_articles' referenced before assignment
 2025-04-04 20:49:01,754 - ERROR - Error processing feed On Labor: local variable 'new_articles' referenced before assignment
+2025-04-04 20:50:19,952 - ERROR - Error processing feed World Socialist Web Site: local variable 'new_articles' referenced before assignment
+2025-04-04 20:50:20,200 - ERROR - Error processing feed DSA - Global: local variable 'new_articles' referenced before assignment
+2025-04-04 20:50:21,461 - ERROR - Error processing feed Jacobin: local variable 'new_articles' referenced before assignment
+2025-04-04 20:50:21,769 - ERROR - Error processing feed The American Prospect: local variable 'new_articles' referenced before assignment
+2025-04-04 20:50:21,996 - ERROR - Error processing feed The Real News Network: local variable 'new_articles' referenced before assignment
+2025-04-04 20:50:22,242 - ERROR - Error processing feed Socialist Alternative: local variable 'new_articles' referenced before assignment
+2025-04-04 20:50:23,335 - ERROR - Error processing feed Left Voice: local variable 'new_articles' referenced before assignment
+2025-04-04 20:50:23,686 - ERROR - Error processing feed On Labor: local variable 'new_articles' referenced before assignment
