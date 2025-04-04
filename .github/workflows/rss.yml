@@ -1,0 +1,28 @@
+name: RSS Monitor
+on:
+  schedule:
+    - cron: "*/10 * * * *"  # Runs every 10 minutes
+  workflow_dispatch:  # Allows manual triggering
+jobs:
+  run-rss-monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Full history for git operations
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      - name: Install dependencies
+        run: pip install feedparser
+      - name: Run RSS script
+        run: python rss_monitor.py
+      - name: Commit and push results
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add data/rss_feeds.db index.html data/rss_monitor.log
+          git commit -m "Update RSS results" || echo "No changes to commit"
+          git push
