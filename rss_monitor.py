@@ -62,7 +62,7 @@ class RSSMonitor:
                     except:
                         pub_date = datetime.now()
                     
-                    cursor.executcute('SELECT id FROM articles WHERE link = ?', (entry.link,))
+                    cursor.execute('SELECT id FROM articles WHERE link = ?', (entry.link,))
                     if cursor.fetchone():
                         continue
                     
@@ -103,22 +103,22 @@ class RSSMonitor:
             cursor.execute('SELECT * FROM articles ORDER BY processed_date DESC LIMIT 50')
             articles = cursor.fetchall()
         
-        html = """
+        html = f"""
         <html>
         <head>
             <title>RSS Monitor</title>
             <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                table { border-collapse: collapse; width: 100%; }
-                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                th { background-color: #f2f2f2; }
-                tr:nth-child(even) { background-color: #f9f9f9; }
+                body {{ font-family: Arial, sans-serif; margin: 20px; }}
+                table {{ border-collapse: collapse; width: 100%; }}
+                th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
+                th {{ background-color: #f2f2f2; }}
+                tr:nth-child(even) {{ background-color: #f9f9f9; }}
             </style>
         </head>
         <body>
             <h1>RSS Feed Monitor</h1>
-            <p>Monitoring feeds: {}</p>
-            <p>Keywords: {}</p>
+            <p>Monitoring feeds: {', '.join(FEEDS.values())}</p>
+            <p>Keywords: {', '.join(KEYWORDS)}</p>
             <table>
                 <tr>
                     <th>Title</th>
@@ -127,7 +127,7 @@ class RSSMonitor:
                     <th>Keywords Matched</th>
                     <th>Processed</th>
                 </tr>
-        """.format(', '.join(FEEDS.values()), ', '.join(KEYWORDS))
+        """
 
         for article in articles:
             html += """
