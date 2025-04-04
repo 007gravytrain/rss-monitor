@@ -100,7 +100,7 @@ class RSSMonitor:
     def generate_html(self):
         with self.db_lock:
             cursor = self.conn.cursor()
-            cursor.execute('SELECT * FROM articles ORDER BY processed_date DESC LIMIT 50')
+            cursor.execute('SELECT * FROM articles WHERE keywords_matched != ORDER BY processed_date DESC LIMIT 50')
             articles = cursor.fetchall()
         
         html = f"""
