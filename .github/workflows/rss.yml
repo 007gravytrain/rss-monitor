@@ -3,26 +3,36 @@ on:
   schedule:
     - cron: "*/10 * * * *"  # Runs every 10 minutes
   workflow_dispatch:  # Allows manual triggering
+
 jobs:
   run-rss-monitor:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Explicitly set permission to write to repo
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Full history for git operations
+      
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.x"
+          python-version: "3.9"  # Specify exact version for consistency
+      
       - name: Install dependencies
-        run: pip install feedparser
+        run: |
+          python -m pip install --upgrade pip
+          pip install feedparser
+      
       - name: Run RSS script
         run: python rss_monitor.py
+        
       - name: Commit and push results
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          git add data/rss_feeds.db index.html data/rss_monitor.log
-          git commit -m "Update RSS results" || echo "No changes to commit"
-          git push
+          git add -f data/rss_feeds.db index.html data/rss_monitor.log  # Force add in case files are gitignored
+          timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+          git commit -m "Update RSS results - $timestamp" || echo "No changes to commit"
+          git push || (git pull --rebase && git push)
