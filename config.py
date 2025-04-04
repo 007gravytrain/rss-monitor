@@ -11,7 +11,7 @@ FEEDS = {
 }
 
 # Keywords to monitor (case insensitive)
-KEYWORDS = ['Amazon', 'Whole Foods']
+KEYWORDS = ['Amazon', 'Whole Foods', 'socialist']
 
 # How often to check feeds (in seconds)
 CHECK_INTERVAL = 300  # 5 minutes, ignored in this setup since GitHub Actions controls timing
