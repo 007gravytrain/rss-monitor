@@ -47,68 +47,68 @@ class RSSMonitor:
             self.conn.commit()
 
     def check_feed(self, feed_url, feed_name):
-    try:
-        # Add these debug lines here
-        print(f"Checking feed: {feed_name}")
-        feed = feedparser.parse(feed_url)
-        print(f"Number of entries in feed: {len(feed.entries)}")
-        print(f"Most recent entry publication date: {feed.entries[0].published if feed.entries else 'No entries'}")
-        
-        new_articles = 0
-        matched_articles = 0
-        
-        with self.db_lock:
-            cursor = self.conn.cursor()
+        try:
+            # Add these debug lines here
+            print(f"Checking feed: {feed_name}")
+            feed = feedparser.parse(feed_url)
+            print(f"Number of entries in feed: {len(feed.entries)}")
+            print(f"Most recent entry publication date: {feed.entries[0].published if feed.entries else 'No entries'}")
+               
+            new_articles = 0
+            matched_articles = 0
             
-            for entry in feed.entries:
-                try:
-                    pub_date = datetime.fromtimestamp(time.mktime(entry.published_parsed))
-                except:
-                    pub_date = datetime.now()
+            with self.db_lock:
+                cursor = self.conn.cursor()
+                
+                for entry in feed.entries:
+                    try:
+                        pub_date = datetime.fromtimestamp(time.mktime(entry.published_parsed))
+                    except:
+                        pub_date = datetime.now()
 
-                cursor.execute('SELECT id, published FROM articles WHERE link = ?', (entry.link,))
-                existing = cursor.fetchone()
-                if existing:
-                    print(f"Article already exists: {entry.title} (published: {existing[1]})")
-                    continue
+                    cursor.execute('SELECT id, published FROM articles WHERE link = ?', (entry.link,))
+                    existing = cursor.fetchone()
+                    if existing:
+                        print(f"Article already exists: {entry.title} (published: {existing[1]})")
+                        continue
 
-                print(f"New article found: {entry.title} (published: {pub_date})")
+                    print(f"New article found: {entry.title} (published: {pub_date})")
+                    
+                    new_articles += 1
+                    
+                    content = f"{entry.title} {getattr(entry, 'description', '')}".lower()
+                    matched_keywords = [kw for kw in KEYWORDS if kw.lower() in content]
+                    
+                    print(f"Checking article: {entry.title}")
+                    print(f"Content: {content[:100]}...")  # Print first 100 characters of content
+                    
+                    if matched_keywords:
+                        matched_articles += 1
+                        print(f"Found matching article: {entry.title}, Keywords: {matched_keywords}")
+                    else:
+                        print(f"No match for article: {entry.title}")
+                    
+                    cursor.execute('''
+                        INSERT OR IGNORE INTO articles 
+                        (title, link, description, published, feed_name, keywords_matched, processed_date)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ''', (
+                        entry.title,
+                        entry.link,
+                        getattr(entry, 'description', ''),
+                        pub_date,
+                        feed_name,
+                        ','.join(matched_keywords),
+                        datetime.now()
+                    ))
                 
-                new_articles += 1
-                
-                content = f"{entry.title} {getattr(entry, 'description', '')}".lower()
-                matched_keykeywords = [kw for kw in KEYWORDS if kw.lower() in content]
-                
-                print(f"Checking article: {entry.title}")
-                print(f"Content: {content[:100]}...")  # Print first 100 characters of content
-                
-                if matched_keywords:
-                    matched_articles += 1
-                    print(f"Found matching article: {entry.title}, Keywords: {matched_keywords}")
-                else:
-                    print(f"No match for article: {entry.title}")
-                
-                cursor.execute('''
-                    INSERT OR IGNORE INTO articles 
-                    (title, link, description, published, feed_name, keywords_matched, processed_date)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                ''', (
-                    entry.title,
-                    entry.link,
-                    getattr(entry, 'description', ''),
-                    pub_date,
-                    feed_name,
-                    ','.join(matched_keywords),
-                    datetime.now()
-                ))
+                self.conn.commit()
             
-            self.conn.commit()
-        
-        print(f"Feed {feed_name} processed: {new_articles} new articles, {matched_articles} matches")
-            
-    except Exception as e:
-        print(f"Error processing feed {feed_name}: {str(e)}")
-        logging.error(f"Error processing feed {feed_name}: {str(e)}")
+            print(f"Feed {feed_name} processed: {new_articles} new articles, {matched_articles} matches")
+                
+        except Exception as e:
+            print(f"Error processing feed {feed_name}: {str(e)}")
+            logging.error(f"Error processing feed {feed_name}: {str(e)}")
 
     def generate_html(self):
         with self.db_lock:
