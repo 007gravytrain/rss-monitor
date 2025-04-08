@@ -7,7 +7,10 @@ FEEDS = {
     "https://therealnews.com/feed?partner-feed=the-real-news-network": "The Real News Network",
     "https://www.socialistalternative.org/feed/": "Socialist Alternative",
     "https://www.leftvoice.org/feed": "Left Voice",
-    "https://onlabor.org/feed/": "On Labor"
+    "https://onlabor.org/feed/": "On Labor",
+    "https://united4respect.org/feed/": "United For Respect",
+    "https://athenaforall.org/index.xml": "Athena Coalition",
+    "https://teamster.org/feed/": "Teamsters"
 }
 
 # Keywords to monitor (case insensitive)
