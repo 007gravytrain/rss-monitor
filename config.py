@@ -10,11 +10,13 @@ FEEDS = {
     "https://onlabor.org/feed/": "On Labor",
     "https://united4respect.org/feed/": "United For Respect",
     "https://athenaforall.org/index.xml": "Athena Coalition",
-    "https://teamster.org/feed/": "Teamsters"
+    "https://teamster.org/feed/": "Teamsters",
+    "https://workerorganizing.org/feed/": "EWOC",
+    "https://cosmonautmag.com/": "Cosmonaut"
 }
 
 # Keywords to monitor (case insensitive)
-KEYWORDS = ['Amazon', 'Whole Foods', 'socialist']
+KEYWORDS = ['Amazon', 'Whole Foods']
 
 # How often to check feeds (in seconds)
 CHECK_INTERVAL = 300  # 5 minutes, ignored in this setup since GitHub Actions controls timing
