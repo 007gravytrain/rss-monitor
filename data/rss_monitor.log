@@ -287,3 +287,4 @@
 2025-04-05 13:50:08,599 - ERROR - Error processing feed Left Voice: local variable 'new_articles' referenced before assignment
 2025-04-05 13:50:08,968 - ERROR - Error processing feed On Labor: local variable 'new_articles' referenced before assignment
 2025-06-12 18:25:45,748 - ERROR - Error processing feed Athena Coalition: IncompleteRead(0 bytes read, 13103 more expected)
+2025-10-02 15:44:36,590 - ERROR - Error processing feed United For Respect: [Errno 104] Connection reset by peer
