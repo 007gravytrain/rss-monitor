@@ -11,14 +11,14 @@ jobs:
       contents: write  # Explicitly set permission to write to repo
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Full history for git operations
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.9"  # Specify exact version for consistency
+          python-version: "3.12"  # 3.9 no longer cached on Ubuntu 26.04 runners
       
       - name: Install dependencies
         run: |
